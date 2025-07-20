@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web APK - User Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #e3f2fd;
+            --secondary: #bbdefb;
+            --accent: #64b5f6;
+            --dark: #1976d2;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --text: #333;
+            --light: #f8f9fa;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: var(--shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--accent), var(--dark));
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            color: var(--dark);
+            margin-right: 15px;
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-active {
+            background-color: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .status-inactive {
+            background-color: var(--danger);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .panel {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        .panel-title {
+            font-size: 1.5rem;
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn i {
+            margin-right: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+
+        .user-list {
+            list-style: none;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            background-color: var(--light);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--accent);
+        }
+
+        .user-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .user-status {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .user-details {
+            flex-grow: 1;
+        }
+
+        .user-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .user-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .message-btn {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .call-btn {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px;
+        }
+
+        .chat-header {
+            background-color: var(--accent);
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .chat-header .status-indicator {
+            margin-left: 10px;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--light);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border-radius: 18px;
+            position: relative;
+        }
+
+        .received {
+            align-self: flex-start;
+            background-color: white;
+            border: 1px solid #ddd;
+        }
+
+        .sent {
+            align-self: flex-end;
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            opacity: 0.7;
+            text-align: right;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            background-color: white;
+            border-radius: 0 0 10px 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(100, 181, 246, 0.3);
+        }
+
+        .chat-input button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            margin-left: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background-color: var(--dark);
+            transform: scale(1.05);
+        }
+
+        .admin-panel {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(100, 181, 246, 0.3);
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .user-table th,
+        .user-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .user-table th {
+            background-color: var(--secondary);
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .user-table tr:hover {
+            background-color: var(--light);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .active-badge {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: var(--success);
+        }
+
+        .inactive-badge {
+            background-color: rgba(244, 67, 54, 0.2);
+            color: var(--danger);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--dark);
+            font-weight: 500;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+        }
+
+        /* Login screen */
+        .login-container {
+            max-width: 500px;
+            margin: 100px auto;
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .login-logo {
+            font-size: 4rem;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            color: var(--dark);
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 25px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive design */
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .user-item {
+                flex-wrap: wrap;
+            }
+            
+            .user-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .user-info {
+                margin-top: 15px;
+            }
+            
+            .login-container {
+                padding: 30px 20px;
+                margin: 50px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-logo">
+            <i class="fas fa-comments"></i>
+        </div>
+        <h1 class="login-title">Web APK Login</h1>
+        <div class="login-form">
+            <div class="form-group">
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button id="loginBtn" class="btn btn-primary login-btn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <div id="loginMessage" class="form-group" style="color: var(--danger); margin-top: 15px;"></div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="app" class="hidden">
+        <div class="container">
+            <header>
+                <div class="logo">
+                    <i class="fas fa-comment-dots"></i>
+                    <h1>Web APK - User Management</h1>
+                </div>
+                <div class="user-info">
+                    <div class="status-indicator status-active"></div>
+                    <span id="currentUser">Admin (Online)</span>
+                    <button id="logoutBtn" class="btn btn-danger btn-sm" style="margin-left: 20px;">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <div class="admin-panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Admin Panel</h2>
+                </div>
+                <div class="form-group">
+                    <label>Create New User</label>
+                    <input type="text" id="newUsername" placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="newPassword" placeholder="Enter password">
+                </div>
+                <button id="createUserBtn" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Create User
+                </button>
+                <div id="adminMessage" style="margin-top: 15px; color: var(--success);"></div>
+
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Users will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="main-content">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Online Users</h2>
+                        <span class="badge">4 Active</span>
+                    </div>
+                    <ul class="user-list" id="userList">
+                        <!-- User list will be populated here -->
+                    </ul>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Chat</h2>
+                        <div class="user-info">
+                            <div class="status-indicator status-active"></div>
+                            <span>John Doe</span>
+                        </div>
+                    </div>
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <i class="fas fa-user"></i> John Doe
+                            <div class="status-indicator status-active"></div>
+                        </div>
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message received">
+                                Hello there! How are you doing?
+                                <div class="message-time">10:30 AM</div>
+                            </div>
+                            <div class="message sent">
+                                I'm doing great! Thanks for asking.
+                                <div class="message-time">10:32 AM</div>
+                            </div>
+                            <div class="message received">
+                                Can we schedule a meeting for tomorrow?
+                                <div class="message-time">10:33 AM</div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" placeholder="Type a message...">
+                            <button><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <p>Web APK creater by Aung Thura</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // Sample user data
+        const users = [
+            { id: 1, username: 'admin', password: 'aungthura142492', active: true, online: true },
+            { id: 2, username: 'John', password: 'pass123', active: true, online: true },
+            { id: 3, username: 'Mary', password: 'pass123', active: true, online: true },
+            { id: 4, username: 'David', password: 'pass123', active: true, online: false },
+            { id: 5, username: 'Lisa', password: 'pass123', active: false, online: false }
+        ];
+
+        // Sample messages
+        const messages = [
+            { id: 1, from: 'John', to: 'admin', text: 'Hello there! How are you doing?', time: '10:30 AM' },
+            { id: 2, from: 'admin', to: 'John', text: 'I\'m doing great! Thanks for asking.', time: '10:32 AM' },
+            { id: 3, from: 'John', to: 'admin', text: 'Can we schedule a meeting for tomorrow?', time: '10:33 AM' }
+        ];
+
+        // DOM elements
+        const loginScreen = document.getElementById('loginScreen');
+        const app = document.getElementById('app');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginMessage = document.getElementById('loginMessage');
+        const currentUserSpan = document.getElementById('currentUser');
+        const userList = document.getElementById('userList');
+        const usersTableBody = document.getElementById('usersTableBody');
+        const createUserBtn = document.getElementById('createUserBtn');
+        const newUsernameInput = document.getElementById('newUsername');
+        const newPasswordInput = document.getElementById('newPassword');
+        const adminMessage = document.getElementById('adminMessage');
+        const chatMessages = document.getElementById('chatMessages');
+
+        // Login functionality
+        loginBtn.addEventListener('click', function() {
+            const username = usernameInput.value;
+            const password = passwordInput.value;
+            
+            if (!username || !password) {
+                loginMessage.textContent = 'Please enter both username and password';
+                return;
+            }
+            
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                if (user.active) {
+                    loginScreen.classList.add('hidden');
+                    app.classList.remove('hidden');
+                    currentUserSpan.textContent = `${user.username} (${user.online ? 'Online' : 'Offline'})`;
+                } else {
+                    loginMessage.textContent = 'Your account is deactivated. Contact admin.';
+                }
+            } else {
+                loginMessage.textContent = 'Invalid username or password';
+            }
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', function() {
+            app.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            usernameInput.value = '';
+            passwordInput.value = '';
+            loginMessage.textContent = '';
+        });
+
+        // Create user functionality
+        createUserBtn.addEventListener('click', function() {
+            const username = newUsernameInput.value;
+            const password = newPasswordInput.value;
+            
+            if (!username || !password) {
+                adminMessage.textContent = 'Please enter both username and password';
+                adminMessage.style.color = 'var(--danger)';
+                return;
+            }
+            
+            if (users.some(u => u.username === username)) {
+                adminMessage.textContent = 'Username already exists';
+                adminMessage.style.color = 'var(--danger)';
+                return;
+            }
+            
+            // Add new user
+            users.push({
+                id: users.length + 1,
+                username,
+                password,
+                active: true,
+                online: false
+            });
+            
+            adminMessage.textContent = `User "${username}" created successfully!`;
+            adminMessage.style.color = 'var(--success)';
+            newUsernameInput.value = '';
+            newPasswordInput.value = '';
+            
+            // Update UI
+            renderUserList();
+            renderUsersTable();
+        });
+
+        // Render user list
+        function renderUserList() {
+            userList.innerHTML = '';
+            
+            users.filter(user => user.username !== 'admin').forEach(user => {
+                const userItem = document.createElement('li');
+                userItem.className = 'user-item';
+                
+                userItem.innerHTML = `
+                    <div class="status-indicator ${user.online ? 'status-active' : 'status-inactive'}"></div>
+                    <div class="user-details">
+                        <div class="user-name">${user.username}</div>
+                        <div>${user.active ? 'Active' : 'Inactive'}</div>
+                    </div>
+                    <div class="user-actions">
+                        <div class="action-btn message-btn">
+                            <i class="fas fa-comment"></i>
+                        </div>
+                        <div class="action-btn call-btn">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                    </div>
+                `;
+                
+                userList.appendChild(userItem);
+            });
+        }
+
+        // Render users table
+        function renderUsersTable() {
+            usersTableBody.innerHTML = '';
+            
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${user.username}</td>
+                    <td>
+                        <span class="status-badge ${user.active ? 'active-badge' : 'inactive-badge'}">
+                            ${user.active ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm delete-btn" data-id="${user.id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                        <button class="btn btn-sm toggle-btn" data-id="${user.id}" 
+                                style="background-color: ${user.active ? 'var(--danger)' : 'var(--success)'}; color: white">
+                            ${user.active ? 'Deactivate' : 'Activate'}
+                        </button>
+                    </td>
+                `;
+                
+                usersTableBody.appendChild(row);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = parseInt(this.getAttribute('data-id'));
+                    const userIndex = users.findIndex(u => u.id === userId);
+                    
+                    if (userIndex !== -1) {
+                        users.splice(userIndex, 1);
+                        renderUserList();
+                        renderUsersTable();
+                    }
+                });
+            });
+            
+            // Add event listeners to toggle buttons
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const userId = parseInt(this.getAttribute('data-id'));
+                    const user = users.find(u => u.id === userId);
+                    
+                    if (user) {
+                        user.active = !user.active;
+                        renderUserList();
+                        renderUsersTable();
+                    }
+                });
+            });
+        }
+
+        // Render chat messages
+        function renderMessages() {
+            chatMessages.innerHTML = '';
+            
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${message.from === 'admin' ? 'sent' : 'received'}`;
+                messageDiv.innerHTML = `
+                    ${message.text}
+                    <div class="message-time">${message.time}</div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Initialize the app
+        function initApp() {
+            renderUserList();
+            renderUsersTable();
+            renderMessages();
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
