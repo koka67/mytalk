@@ -1,2 +1,0 @@
-# mytalk
-mytalk
