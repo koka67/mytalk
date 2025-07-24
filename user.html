@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AT Messenger - User</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="js/database.js"></script>
+    <script src="js/user.js"></script>
+</head>
+<body>
+    <div class="user-container">
+        <header>
+            <h1>AT Messenger</h1>
+            <button id="user-logout-btn" class="btn logout">Logout</button>
+        </header>
+        
+        <div class="user-content">
+            <div class="user-list-container">
+                <h2>Active Users</h2>
+                <div class="user-list" id="active-user-list">
+                    <!-- Active users will be populated here -->
+                </div>
+            </div>
+            
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h2 id="chat-with-user">Select a user to chat</h2>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <!-- Messages will appear here -->
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="message-input" placeholder="Type your message...">
+                    <button id="send-btn" class="btn">Send</button>
+                    <button id="call-btn" class="btn call">Call</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Web APK created by AT</p>
+        </footer>
+    </div>
+</body>
+</html>
